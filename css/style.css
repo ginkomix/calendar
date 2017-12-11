@@ -11,3 +11,18 @@ a {
 .active {
 	color: cyan;
 }
+td,th {
+	width: 70px;
+	height: 60px;
+	border: 1px solid black;
+	
+}
+.divButton {
+	width:505px;
+	display: flex;
+	justify-content: space-between;
+}
+.activeDay {
+	background: #bfbfbf;
+	color: white;
+}
