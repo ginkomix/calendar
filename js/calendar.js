@@ -5,9 +5,10 @@ function Calendar(yearParam,monthParam) {
 	let now = new Date();
 	this.year =	yearParam || now.getYear();
 	this.month = monthParam || now.getMonth();
-	this.element = now.getMonth()+now.getMilliseconds();
+	this.element = 3;
+//	this.element = now.getMonth()+now.getMilliseconds();
 	var self = this;
-	this.daySelect = 1;
+	this.daySelect = 0;
 
 
 
@@ -32,25 +33,19 @@ function Calendar(yearParam,monthParam) {
 			return;
 		}
 		let classButton = event.target.getAttribute('class');
+		var where = document.querySelector('.boxSave'+self.element);
 		if(classButton==='buttonLeft'){
 			changeMonthBack();
+			
+			self.daySelect = self.clearText(where);
 			self.drawCalendar();
 		}
 		if(classButton==='buttonRight'){
 			changeMonthNext();
+			
+			self.daySelect =self.clearText(where);
 			self.drawCalendar();
 		}
-	}
-
-	function clickSave(event){
-		var target = event.target;
-		if(target.tagName!='TD') {
-			return;
-		}
-		var p = document.createElement('p');
-		boxSave.appendChild(p);
-		p.innerHTML = target.innerHTML+' '+year+' '+month;
-		localStorage.setItem(target.innerHTML+' '+year+' '+month,target.innerHTML+' '+year+' '+month)
 	}
 
 	function getLocal() {
@@ -62,17 +57,74 @@ function Calendar(yearParam,monthParam) {
 		}
 	}
 
-Calendar.prototype.newTask = function(event) {
+	this.newTask = function(event) {
+		var where = document.querySelector('.boxSave'+self.element);
+		self.getNumDay(event,self.daySelect)
+			.then(function(day) {
+			var data = ''+self.element+self.year+self.month+day;
+			var textObj =  self.outputOllStorage(data);								  
+			where.innerHTML = '';
+			
+			for(var key in textObj) {
+				self.output(where,textObj[key]);
+			}
+				
+			return day;									  
+		}).then(function(day){
+			if(self.daySelect === day) {
+				var text = self.getText();
+				if(text===null && text==='') {
+					return;
+				}
+				
+				self.output(where,text); 
 
-	self.getNumDay(event,self.daySelect).then(function(day){
-		self.daySelect = day;
-		self.daySelect = self.setActive(self.daySelect);
-
-	});
+				var data = ''+self.element+self.year+self.month+day;
+				var objStorage= {}, num =where.childNodes.length ;
+				objStorage[num] = text;	
+				self.saveText(data,objStorage); 
+				self.outputOllStorage(data);
+			} else {
+				self.daySelect = day;
+				self.daySelect = self.setActive(self.daySelect);
+			}
+		});
+	}
 }
 
+Calendar.prototype.clearText = function (where){
+	where.innerHTML = '';
+	return 0;
+}
 
+Calendar.prototype.output = function(where,text){
 
+	var p = document.createElement('p');
+	where.appendChild(p);
+	p.innerHTML = text;
+}
+
+Calendar.prototype.saveText = function(where,text){
+	var sObj;
+	var storageText =JSON.parse(localStorage.getItem(where));
+	if(!storageText)
+		{
+		storageText = text;
+		}else {
+			Object.assign(storageText,text);
+		}
+	
+	var sObj = JSON.stringify(storageText);
+	localStorage.setItem(where,sObj);
+
+}
+
+Calendar.prototype.outputOllStorage = function(where) {
+	return JSON.parse(localStorage.getItem(where));
+}
+
+Calendar.prototype.getText = function() {
+	return prompt('Введите задачу');
 }
 
 Calendar.prototype.drawInteractiveCalendar = function() {
@@ -89,7 +141,8 @@ Calendar.prototype.drawInteractiveCalendar = function() {
 	buttonRight.innerHTML = '[>]';
 	buttonRight.className = 'buttonRight';
 	var divButton = document.createElement('div');
-	divButton.className = 'divButton'+this.element;
+	divButton.className += 'divButton';
+	divButton.className += ' divButton'+this.element;
 
 	var boxSave = document.createElement('div');
 	boxSave.className = 'boxSave'+this.element;
@@ -112,7 +165,7 @@ Calendar.prototype.getDayNumber = function(date) {
 	}
 	else  return number - 1;
 }
- 
+
 
 
 
@@ -141,7 +194,7 @@ Calendar.prototype.getNumDay = function(event,day) {
 	return new Promise(function(resolve) {
 		var target = event.target;
 		if(target.tagName != 'TD') {
-			resolve(day);
+			resolve(NaN);
 		}
 		resolve(parseInt(target.innerHTML));
 
