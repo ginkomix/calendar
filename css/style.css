@@ -26,3 +26,10 @@ td,th {
 	background: #bfbfbf;
 	color: white;
 }
+.infAboutDay {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	height: 30px;
+	width: 300px;
+}

@@ -6,7 +6,7 @@ function Calendar(yearParam,monthParam) {
 	this.year =	yearParam || now.getYear();
 	this.month = monthParam || now.getMonth();
 	this.element = 3;
-//	this.element = now.getMonth()+now.getMilliseconds();
+	//	this.element = now.getMonth()+now.getMilliseconds();
 	var self = this;
 	this.daySelect = 0;
 
@@ -36,25 +36,41 @@ function Calendar(yearParam,monthParam) {
 		var where = document.querySelector('.boxSave'+self.element);
 		if(classButton==='buttonLeft'){
 			changeMonthBack();
-			
+
 			self.daySelect = self.clearText(where);
 			self.drawCalendar();
 		}
 		if(classButton==='buttonRight'){
 			changeMonthNext();
-			
+
 			self.daySelect =self.clearText(where);
 			self.drawCalendar();
 		}
 	}
 
-	function getLocal() {
-		for( var i = 0;i<localStorage.length;i++) {
-			var key = localStorage.key(i);
-			var p = document.createElement('p');
-			boxSave.appendChild(p);
-			p.innerHTML = localStorage.getItem(key);
+	this.delInf = function(event) {
+		var where = document.querySelector('.boxSave'+self.element);
+		var target = event.target;
+		if(target.tagName != 'BUTTON') {
+			return;
 		}
+		var id = event.target.getAttribute('id');
+		var nextTrip = confirm('Удалить?');
+		if(!nextTrip) {
+			return;
+		}
+		
+		var data = self.toArr(id);
+		console.log(data);
+		var textObj =  self.outputOllStorage(data[0]);
+		self.removeItemFromStorage(data).then(function(){
+			textObj =  self.outputOllStorage(data[0]);
+			where.innerHTML = '';
+			for(var key in textObj) {
+				self.output(where,textObj[key],data[1],data[0]);
+			}	
+		});
+
 	}
 
 	this.newTask = function(event) {
@@ -62,25 +78,22 @@ function Calendar(yearParam,monthParam) {
 		self.getNumDay(event,self.daySelect)
 			.then(function(day) {
 			var data = ''+self.element+self.year+self.month+day;
-			var textObj =  self.outputOllStorage(data);								  
+			var textObj =  self.outputOllStorage(data);							  
 			where.innerHTML = '';
-			
 			for(var key in textObj) {
-				self.output(where,textObj[key]);
+				self.output(where,textObj[key],key,data);
 			}
-				
 			return day;									  
 		}).then(function(day){
 			if(self.daySelect === day) {
 				var text = self.getText();
-				if(text===null && text==='') {
+				console.log(typeof text);
+				if(text===null) {
 					return;
 				}
-				
-				self.output(where,text); 
-
 				var data = ''+self.element+self.year+self.month+day;
 				var objStorage= {}, num =where.childNodes.length ;
+				self.output(where,text,num,data); 
 				objStorage[num] = text;	
 				self.saveText(data,objStorage); 
 				self.outputOllStorage(data);
@@ -92,15 +105,52 @@ function Calendar(yearParam,monthParam) {
 	}
 }
 
+
+
 Calendar.prototype.clearText = function (where){
 	where.innerHTML = '';
 	return 0;
 }
+Calendar.prototype.toArr = function(num) {
+	var num = num+'';
+	num = num.split(',');
+	for(var i = 0;i<num.length;i++) {
+		num[i] = parseInt(num[i]);
+	}
+	return num;
+}
+Calendar.prototype.removeItemFromStorage = function(link) {
+	return new Promise(function(resolve) {
+	
+		var storageText =JSON.parse(localStorage.getItem(link[0]));
+		delete storageText[link[1]];
+		var arr = [],storageObj = {};
+		for(var i in storageText) {
+			arr.push(storageText[i]);
+		}
+		for(var i= 0;i<arr.length;i++) {
+		storageObj[i] = arr[i];
+		}
+		var sObj = JSON.stringify(storageObj);
+		localStorage.setItem(link[0],sObj);	
+	return	resolve();
+	});
+}
 
-Calendar.prototype.output = function(where,text){
+
+Calendar.prototype.output = function(where,text,num,data){
 
 	var p = document.createElement('p');
-	where.appendChild(p);
+	var div = document.createElement('div');
+	var button = document.createElement('button');
+	var arrayForDel = [data,num];
+	div.className = 'infAboutDay';
+	button.innerHTML = 'Удалить!';
+	button.className = 'del';
+	button.id = arrayForDel;
+	div.appendChild(p);
+	div.appendChild(button);
+	where.appendChild(div);
 	p.innerHTML = text;
 }
 
@@ -108,12 +158,12 @@ Calendar.prototype.saveText = function(where,text){
 	var sObj;
 	var storageText =JSON.parse(localStorage.getItem(where));
 	if(!storageText)
-		{
+	{
 		storageText = text;
-		}else {
-			Object.assign(storageText,text);
-		}
-	
+	}else {
+		Object.assign(storageText,text);
+	}
+
 	var sObj = JSON.stringify(storageText);
 	localStorage.setItem(where,sObj);
 
@@ -226,6 +276,7 @@ calendar.drawInteractiveCalendar();
 calendar.drawCalendar();
 document.querySelector('.divButton'+calendar.element).addEventListener('click',calendar.clickChangeCalendar);
 document.querySelector('#divCalendarMain'+calendar.element).addEventListener('click',calendar.newTask);
+document.querySelector('.boxSave'+calendar.element).addEventListener('click',calendar.delInf);
 
 
 
