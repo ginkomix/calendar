@@ -33,3 +33,35 @@ td,th {
 	height: 30px;
 	width: 300px;
 }
+.configure {
+	width: 700px;
+	height: 400px;
+	padding: 20px;
+	margin: 15px;
+	border: 1px solid black;
+}
+.configure span {
+	display: block;
+	background: white;
+	width: 130px;
+	padding: 0 10px;
+	height: auto;
+	margin-top: -30px;
+}
+.number {
+	width: 30px;
+	margin-bottom: 3px;
+}
+.scriptCalendar {
+	width: 100%;
+	margin-top: 10px;
+	display: flex;
+	align-items:stretch;
+	justify-content: space-around;
+}
+.scriptCalendarBlock {
+	width: 40%;
+	height: 220px;
+	padding: 10px;
+	border: 1px solid black;
+}
