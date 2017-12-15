@@ -24,14 +24,15 @@
 			<div id="create">
 				<div class="configure">
 				<span>Configure Calendar</span><br>
-				 <p><input type="checkbox" value="1417"> allow change month</p>
-				  <p><input type="checkbox"  value="1417"> allow add tasks</p>
-				   <p><input type="checkbox" value="1417"> allow remove tasks</p>
+				 <p><input class="inputConfigure" type="checkbox"  id="changeMonth" > allow change month</p>
+				  <p><input class="inputConfigure" type="checkbox" id="addTasks"  > allow add tasks</p>
+				   <p><input class="inputConfigure" type="checkbox" id="removeTasks" > allow remove tasks</p>
 				   <p>show month / year</p>
-				   <p><input class="number" type="number"> <input class="number" type="number">  	</p>  
-					<p><input type="text"></p>
+				   <p><input class="number inputConfigure" id="month" type="number">
+				    <input class="number inputConfigure" id="year" type="number"></p>  
+					<p><input type="text" id="class"></p>
 					<div class="scriptCalendar">
-						<div class="scriptCalendarBlock"></div>
+						<div id="textScriptCalendar" class="scriptCalendarBlock"></div>
 						<div class="scriptCalendarBlock"></div>
 					</div>
 				</div>

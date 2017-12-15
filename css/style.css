@@ -64,4 +64,5 @@ td,th {
 	height: 220px;
 	padding: 10px;
 	border: 1px solid black;
+	overflow: scroll;
 }
