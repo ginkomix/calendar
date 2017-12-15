@@ -1,13 +1,14 @@
 'use strict';
 (function() {
-	function Calendar(yearParam,monthParam,showMonth,allowAdd,allowRemove,element) {
+	function Calendar(yearParam,monthParam,block,element) {
 		let now = new Date();
 		this.year =	yearParam || now.getYear();
 		this.month = monthParam || now.getMonth();
-		this.element = element || 1;
-		this.showMonth = showMonth || true;
-		this.allowAdd = allowAdd || true;
-		this.allowRemove = allowRemove || true;
+		this.element =  element || 1;
+		this.showMonth =  true;
+		this.allowAdd =  true;
+		this.allowRemove =  true;
+		this.block = block ||'#calendar';
 		var self = this;
 		this.daySelect = 0;
 
@@ -49,17 +50,26 @@
 		}
 
 		this.configure = function() {
-			var element = (Math.random()*(1000-1)+1).toFixed(),
-				showMonth = document.querySelector('#changeMonth').checked ? 1 : 0,
-				allowAdd = document.querySelector('#addTasks').checked ? 1 : 0,
-				allowRemove = document.querySelector('#removeTasks').checked ? 1 : 0,
-				yearParam = document.querySelector('#year').value || 2017,
-				monthParam = document.querySelector('#month').value || 12,
-				classCalendar = document.querySelector('#class').value || 'ginkoMix';
+			var elementTest = (Math.random()*(1000-1)+1).toFixed(),
+				showMonthTest = document.querySelector('#changeMonth').checked ? 1 : 0,
+				allowAddTest = document.querySelector('#addTasks').checked ? 1 : 0,
+				allowRemoveTest = document.querySelector('#removeTasks').checked ? 1 : 0,
+				yearParamTest = document.querySelector('#year').value || 2017,
+				monthParamTest = document.querySelector('#month').value || 12,
+				classCalendarTest = document.querySelector('#class').value || 'ginkoMix';
+			self.year =	yearParamTest || now.getYear();
+			self.month = monthParamTest || now.getMonth();
+			self.showMonth =  showMonthTest;
+			self.allowAdd =  allowAddTest;
+			self.allowRemove =  allowRemoveTest;
+			self.calendarScript(elementTest,showMonthTest,allowAddTest,allowRemoveTest,yearParamTest,monthParamTest,classCalendarTest)
+				.then(function(){
 			
-			self.calendarScript(element,showMonth,allowAdd,allowRemove,yearParam,monthParam,classCalendar);
+				self.drawCalendar();
+				
+			});
 		}
-
+		
 		this.delInf = function(event) {
 			if(self.allowRemove) {
 				var where = document.querySelector('.boxSave'+self.element);
@@ -188,9 +198,10 @@
 	}
 
 	Calendar.prototype.drawInteractiveCalendar = function() {
+		
 		var el = document.createElement('div');
 		el.id = 'interactiveCalendar'+this.element;
-		document.querySelector('#calendar').appendChild(el);
+		document.querySelector(this.block).appendChild(el);
 		var buttonLeft = document.createElement('button');
 		buttonLeft.innerHTML = '[<]';
 		buttonLeft.className = 'buttonLeft';
@@ -240,7 +251,7 @@
 		Calendar += '</tr></table>';	document.querySelector('#divCalendarMain'+this.element).innerHTML=  Calendar;
 		document.querySelector('.data'+this.element).innerHTML = this.year+' '+this.month;
 		this.daySelect = this.setActive(this.daySelect);
-		this.configure();
+
 	}
 
 	Calendar.prototype.getNumDay = function(event,day) {
@@ -273,9 +284,9 @@
 	}
 
 	Calendar.prototype.calendarScript = function(element,showMonth,allowAdd,allowRemove,yearParam,monthParam,classCalendar) {
-		
-		document.querySelector('#textScriptCalendar').innerText = '';
-		document.querySelector('#textScriptCalendar').innerText  = "(function() {\
+		return new Promise(function(resolve) {
+			document.querySelector('#textScriptCalendar').innerText = '';
+			document.querySelector('#textScriptCalendar').innerText  = "(function() {\
 function Calendar() { \n\
 this.year =	"+yearParam +"; \n\
 this.month = "+monthParam +"; \n\
@@ -522,6 +533,8 @@ document.querySelector('.divButton'+calendar.element).addEventListener('click',c
 document.querySelector('#divCalendarMain'+calendar.element).addEventListener('click',calendar.newTask);\n\
 document.querySelector('.boxSave'+calendar.element).addEventListener('click',calendar.delInf);\n\
 })()";
+			return resolve();
+		});
 
 
 	}
@@ -532,13 +545,19 @@ document.querySelector('.boxSave'+calendar.element).addEventListener('click',cal
 	document.querySelector('.divButton'+calendar.element).addEventListener('click',calendar.clickChangeCalendar);
 	document.querySelector('#divCalendarMain'+calendar.element).addEventListener('click',calendar.newTask);
 	document.querySelector('.boxSave'+calendar.element).addEventListener('click',calendar.delInf);
+
+
+
+	let calendarTest = new Calendar(2017,12,'#testCalendarBlock',3);
+	calendarTest.drawInteractiveCalendar();
+	calendarTest.drawCalendar();	document.querySelector('.divButton'+calendarTest.element).addEventListener('click',calendarTest.clickChangeCalendar);	document.querySelector('#divCalendarMain'+calendarTest.element).addEventListener('click',calendarTest.newTask);
+	document.querySelector('.boxSave'+calendarTest.element).addEventListener('click',calendarTest.delInf);
 	var element = document.querySelectorAll('.inputConfigure');
 	for(var i = 0;i<element.length;i++) {
-		element[i].addEventListener('change',calendar.configure);
+		element[i].addEventListener('change',calendarTest.configure);
 
 	}
-	
-
+	calendarTest.configure();
 
 
 })()

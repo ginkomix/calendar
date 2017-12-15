@@ -12,13 +12,38 @@ a {
 	color: cyan;
 }
 td,th {
-	width: 70px;
-	height: 60px;
+	width: 14%;
+
 	border: 1px solid black;
 	
 }
+#calendar td,#calendar th {
+	width: 40px;
+	height: 30px;
+}
+#calendar table {
+	width: 40%;
+	
+}
+#calendar .divButton {
+	width:40%;
+	display: flex;
+	justify-content: space-between;
+}
+table {
+	width: 100%;
+	
+}
+.no-click {
+	position: absolute;
+	width: 100%;
+	height: 100%;
+}
+#testCalendarBlock span{
+	margin: 0;
+}
 .divButton {
-	width:505px;
+	width:100%;
 	display: flex;
 	justify-content: space-between;
 }
@@ -65,4 +90,11 @@ td,th {
 	padding: 10px;
 	border: 1px solid black;
 	overflow: scroll;
+}
+#testCalendarBlock {
+	width: 40%;
+	height: 220px;
+	padding: 10px;
+	border: 1px solid black;
+	position: relative;
 }
