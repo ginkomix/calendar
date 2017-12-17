@@ -12,22 +12,6 @@
 		var self = this;
 		this.daySelect = 0;
 
-		function changeMonthBack(){
-			self.month--;
-			if(self.month===0) {
-				self.month=12;
-				self.year--;
-			}
-		}
-
-		function changeMonthNext(){
-			self.month++;
-			if(self.month===13) {
-				self.month=1;
-				self.year++;
-			}
-		}
-
 		this.clickChangeCalendar = function(event){
 			if(self.showMonth) {
 				if(event.target.tagName!="BUTTON") {
@@ -36,13 +20,13 @@
 				let classButton = event.target.getAttribute('class');
 				var where = document.querySelector('.boxSave'+self.element);
 				if(classButton==='buttonLeft'){
-					changeMonthBack();
+					self.changeMonthBack(self);
 
 					self.daySelect = self.clearText(where);
 					self.drawCalendar();
 				}
 				if(classButton==='buttonRight'){
-					changeMonthNext();
+					self.changeMonthNext(self);
 					self.daySelect =self.clearText(where);
 					self.drawCalendar();
 				}
@@ -161,6 +145,22 @@
 		});
 	}
 
+	Calendar.prototype.changeMonthBack = function(self){
+			self.month--;
+			if(self.month===0) {
+				self.month=12;
+				self.year--;
+			}
+		}
+
+	Calendar.prototype.changeMonthNext = function(self){
+			self.month++;
+			if(self.month===13) {
+				self.month=1;
+				self.year++;
+			}
+		}
+	
 	Calendar.prototype.output = function(where,text,num,data){
 		var p = document.createElement('p');
 		var div = document.createElement('div');
